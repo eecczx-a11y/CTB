@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>建议聊天机器人</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <h2>建议聊天机器人</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="输入你的问题...">
+        <button onclick="sendMessage()">发送</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            let input = document.getElementById("user-input");
+            let message = input.value.trim();
+            if (!message) return;
+
+            let chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<div class="user-msg">你: ${message}</div>`;
+
+            fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: `message=${encodeURIComponent(message)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML += `<div class="bot-msg">机器人: ${data.reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
